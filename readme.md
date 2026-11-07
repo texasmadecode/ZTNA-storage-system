@@ -67,6 +67,6 @@ docker run --rm secure-gatekeeper
 ### Pulling from the Official GitHub Cloud Package Registry
 Once built by the cloud automation pipeline, you can fetch and run the official production-grade package release on any target machine worldwide using a single terminal instruction:
 ```bash
-docker run --rm ghcr.io/texasmadecode/ZTNA storage system:latest
+docker run --rm ghcr.io/texasmadecode/ztna-storage-system:latest
 ```
 

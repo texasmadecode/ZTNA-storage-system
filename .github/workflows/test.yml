@@ -41,12 +41,11 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # 2. Automatically build the production asset and push it to your package repository
+        # 2. Automatically build the production asset and push it to your package repository
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        # Formats the image path to match: ghcr.io/yourusername/yourrepo:latest
-        tags: |
-          ghcr.io/${{ github.repository }}:latest
+        tags: ghcr.io/texasmadecode/ztna-storage-system:latest
+
