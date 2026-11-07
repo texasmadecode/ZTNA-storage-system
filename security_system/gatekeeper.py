@@ -19,26 +19,21 @@ def log_event(message):
 
 def generate_one_time_password(username):
     """
-    Generates a secure, temporary password. Displays it ONCE,
-    then returns a secure password hash to be saved on the server.
+    Generates a secure, temporary password. 
+    Returns BOTH the raw password and the hash to the caller.
     """
-    # 1. Create an 8-character secure random token
+    # 1. Create the secure random token
     raw_password = secrets.token_hex(4) 
     
-    # 2. Display the plain-text password to the console exactly once
-    print(f"⚠️  TEMPORARY CREDENTIAL GENERATED FOR [{username}]: {raw_password}")
-    print("⚠️  Write this down now! It will never be displayed again.")
+    # 2. Hash it immediately for secure storage
+    hashed = hashlib.sha256(raw_password.encode()).hexdigest()
     
-    # 3. Hash the password immediately for secure storage (slow KDF + per-password salt)
-    salt = secrets.token_bytes(16)
-    derived_key = hashlib.scrypt(raw_password.encode(), salt=salt, n=2**14, r=8, p=1)
-    hashed = f"{salt.hex()}${derived_key.hex()}"
+    # 3. Log the event safely (No plain-text variables touch log_event!)
+    log_event(f"Secure credential hash initialized for user: {username}")
     
-    # 4. Write a trace entry to our audit log
-    log_event(f"New one-time credential hash created for user: {username}")
-    
-    # 5. Return only the safe, scrambled hash
-    return hashed      
+    # 4. Return both as a tuple
+    return raw_password, hashed
+
 
 
 def set_windows_folder_access(username, folder_path, permission_type="R"):

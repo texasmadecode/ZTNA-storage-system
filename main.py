@@ -10,7 +10,10 @@ def run_security_suite():
     
     # 1. Register a user and generate a secure, one-time setup code
     # This prints the raw string once and saves only the secure SHA-256 hash
-    user_hash = gatekeeper.generate_one_time_password("employee_01")
+    password_to_show, user_hash = gatekeeper.generate_one_time_password("employee_01")
+
+    print(f"⚠️  TEMPORARY CREDENTIAL GENERATED FOR [employee_01]: {password_to_show}")
+    print("⚠️  Provide this to the user immediately! It is hidden from backend server logs.")
 
     # 2. Map strict Windows folder permissions natively using our background subprocess tool
     # Runs the native Windows 'icacls' command or falls back gracefully on non-Windows hosts
