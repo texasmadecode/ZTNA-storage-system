@@ -25,8 +25,11 @@ def generate_one_time_password(username):
     # 1. Create the secure random token
     raw_password = secrets.token_hex(4) 
     
-    # 2. Hash it immediately for secure storage
-    hashed = hashlib.sha256(raw_password.encode()).hexdigest()
+    # 2. Hash it immediately for secure storage using a password KDF (PBKDF2)
+    salt = secrets.token_bytes(16)
+    iterations = 210000
+    derived_key = hashlib.pbkdf2_hmac("sha256", raw_password.encode("utf-8"), salt, iterations)
+    hashed = f"pbkdf2_sha256${iterations}${salt.hex()}${derived_key.hex()}"
     
     # 3. Log the event safely (No plain-text variables touch log_event!)
     log_event(f"Secure credential hash initialized for user: {username}")
