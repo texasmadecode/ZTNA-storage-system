@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-with: ubuntu-latest # GitHub spins up a fresh, clean Linux machine in the cloud
+    runs-on: ubuntu-latest # GitHub spins up a fresh, clean Linux machine in the cloud
 
     steps:
     # 1. Pull down a copy of your code repository onto the cloud machine
