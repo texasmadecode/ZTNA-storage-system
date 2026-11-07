@@ -1,6 +1,5 @@
-name: Security System Automation Test
+name: Security System Automation and Release
 
-# Trigger this workflow every single time you push code to the main branch
 on:
   push:
     branches: [ "main" ]
@@ -9,17 +8,45 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # GitHub spins up a fresh, clean Linux machine in the cloud
-
+    runs-on: ubuntu-latest
     steps:
-    # 1. Pull down a copy of your code repository onto the cloud machine
     - name: Checkout repository code
       uses: actions/checkout@v4
 
-    # 2. Build your custom Docker container to ensure your Dockerfile config is flawless
     - name: Build the Docker Image
       run: docker build -t cyber-gatekeeper .
 
-    # 3. Execute the gatekeeper script in the cloud to verify all Python imports work perfectly
     - name: Run Gatekeeper Simulation Test
       run: docker run --rm cyber-gatekeeper
+
+  # Brand new secondary release job layer
+  publish-image:
+    needs: build-and-test # Only run this if our core math/security tests pass successfully!
+    runs-on: ubuntu-latest
+    
+    # Grant permission blocks to let the cloud agent write packages to your account
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    # 1. Safely log into the GitHub Container Registry using native actor macros
+    - name: Log in to the Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # 2. Automatically build the production asset and push it to your package repository
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        # Formats the image path to match: ghcr.io/yourusername/yourrepo:latest
+        tags: |
+          ghcr.io/${{ github.repository }}:latest
