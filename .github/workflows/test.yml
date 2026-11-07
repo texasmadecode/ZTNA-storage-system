@@ -1,0 +1,25 @@
+name: Security System Automation Test
+
+# Trigger this workflow every single time you push code to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-with: ubuntu-latest # GitHub spins up a fresh, clean Linux machine in the cloud
+
+    steps:
+    # 1. Pull down a copy of your code repository onto the cloud machine
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    # 2. Build your custom Docker container to ensure your Dockerfile config is flawless
+    - name: Build the Docker Image
+      run: docker build -t cyber-gatekeeper .
+
+    # 3. Execute the gatekeeper script in the cloud to verify all Python imports work perfectly
+    - name: Run Gatekeeper Simulation Test
+      run: docker run --rm cyber-gatekeeper
