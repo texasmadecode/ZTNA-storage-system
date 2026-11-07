@@ -25,9 +25,9 @@ def generate_one_time_password(username):
     # 1. Create an 8-character secure random token
     raw_password = secrets.token_hex(4) 
     
-    # 2. Display the plain-text password to the console exactly once
-    print(f"⚠️  TEMPORARY CREDENTIAL GENERATED FOR [{username}]: {raw_password}")
-    print("⚠️  Write this down now! It will never be displayed again.")
+    # 2. Do not display the plain-text password in logs/console output
+    print(f"⚠️  TEMPORARY CREDENTIAL GENERATED FOR [{username}].")
+    print("⚠️  Credential value is hidden for security.")
     
     # 3. Hash the password immediately for secure storage
     hashed = hashlib.sha256(raw_password.encode()).hexdigest()
