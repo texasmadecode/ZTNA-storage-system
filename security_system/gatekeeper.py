@@ -20,7 +20,7 @@ def log_event(message):
 def generate_one_time_password(username):
     """
     Generates a secure, temporary password. Displays it ONCE,
-    then returns the secure SHA-256 hash to be saved on the server.
+    then returns a secure password hash to be saved on the server.
     """
     # 1. Create an 8-character secure random token
     raw_password = secrets.token_hex(4) 
@@ -29,8 +29,10 @@ def generate_one_time_password(username):
     print(f"⚠️  TEMPORARY CREDENTIAL GENERATED FOR [{username}]: {raw_password}")
     print("⚠️  Write this down now! It will never be displayed again.")
     
-    # 3. Hash the password immediately for secure storage
-    hashed = hashlib.sha256(raw_password.encode()).hexdigest()
+    # 3. Hash the password immediately for secure storage (slow KDF + per-password salt)
+    salt = secrets.token_bytes(16)
+    derived_key = hashlib.scrypt(raw_password.encode(), salt=salt, n=2**14, r=8, p=1)
+    hashed = f"{salt.hex()}${derived_key.hex()}"
     
     # 4. Write a trace entry to our audit log
     log_event(f"New one-time credential hash created for user: {username}")
